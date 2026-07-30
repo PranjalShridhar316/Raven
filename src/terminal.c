@@ -1,66 +1,65 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include <termios.h>
 #include <unistd.h>
 
-#include "../include/terminal.h"
-
-
-struct termios original;
-
+#include "terminal.h"
 
 /*
-    Disable raw mode and restore terminal settings
-*/
+ * Stores the original terminal settings.
+ * These settings are restored when Raven exits.
+ */
+static struct termios originalTermios;
+
+/*
+ * Restore the terminal to its original state.
+ */
 void disableRawMode(void)
 {
-    tcsetattr(
-        STDIN_FILENO,
-        TCSAFLUSH,
-        &original
-    );
+    if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &originalTermios) == -1)
+    {
+        perror("tcsetattr");
+        exit(EXIT_FAILURE);
+    }
 }
 
-
 /*
-    Enable raw terminal mode
-*/
+ * Enable raw mode.
+ *
+ * Raw mode allows Raven to receive keyboard input
+ * one character at a time instead of waiting for Enter.
+ */
 void enableRawMode(void)
 {
-
-    tcgetattr(
-        STDIN_FILENO,
-        &original
-    );
-
-
-    struct termios raw = original;
-
-
-    raw.c_lflag &= ~(ECHO | ICANON);
-
-
-    tcsetattr(
-        STDIN_FILENO,
-        TCSAFLUSH,
-        &raw
-    );
-
-}
-
-
-/*
-    Read one keyboard character
-*/
-int readKey(void)
-{
-
-    char c;
-
-
-    if(read(STDIN_FILENO,&c,1)==1)
+    if (tcgetattr(STDIN_FILENO, &originalTermios) == -1)
     {
-        return c;
+        perror("tcgetattr");
+        exit(EXIT_FAILURE);
     }
 
+    struct termios raw = originalTermios;
 
-    return -1;
+    /* Disable echo and canonical mode */
+    raw.c_lflag &= ~(ECHO | ICANON);
+
+    if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw) == -1)
+    {
+        perror("tcsetattr");
+        exit(EXIT_FAILURE);
+    }
+}
+
+/*
+ * Read one character from the keyboard.
+ */
+int readKey(void)
+{
+    char c;
+
+    while (read(STDIN_FILENO, &c, 1) != 1)
+    {
+        /* Keep trying until one character is read */
+    }
+
+    return c;
 }
