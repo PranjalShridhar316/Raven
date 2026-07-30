@@ -1,32 +1,27 @@
-#include <stdio.h>
+/*
+ * ============================================================================
+ * Raven Editor
+ * File        : main.c
+ * ============================================================================
+ */
 
-#include "raven.h"
 #include "terminal.h"
 #include "editor.h"
+#include "screen.h"
+#include "input.h"
 
 int main(void)
 {
-    printf("1. Starting Raven\n");
-
     enableRawMode();
-    printf("2. Raw mode enabled\n");
 
     editorInit();
-    printf("3. Editor initialized\n");
 
     while (1)
     {
-        int key = readKey();
+        editorRefreshScreen();
 
-        printf("Key = %d\n", key);
-
-        if (key == 17)
-            break;
+        editorProcessKeypress();
     }
-
-    disableRawMode();
-
-    printf("4. Exiting\n");
 
     return 0;
 }
