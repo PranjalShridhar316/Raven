@@ -2,38 +2,31 @@
 
 #include "raven.h"
 #include "terminal.h"
+#include "editor.h"
 
 int main(void)
 {
-    /* Display editor version */
-    printf("Raven Editor v%s\n", RAVEN_VERSION);
+    printf("1. Starting Raven\n");
 
-    /* Enable raw terminal mode */
     enableRawMode();
+    printf("2. Raw mode enabled\n");
 
-    /* Main input loop */
+    editorInit();
+    printf("3. Editor initialized\n");
+
     while (1)
     {
         int key = readKey();
 
-        /* Display the ASCII value of the key pressed */
-        printf("\rKey Pressed: %3d", key);
-        fflush(stdout);
+        printf("Key = %d\n", key);
 
-        /*
-         * Ctrl + Q
-         * ASCII value = 17
-         */
         if (key == 17)
-        {
             break;
-        }
     }
 
-    /* Restore terminal settings */
     disableRawMode();
 
-    printf("\nGoodbye!\n");
+    printf("4. Exiting\n");
 
     return 0;
 }

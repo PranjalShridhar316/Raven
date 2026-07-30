@@ -1,18 +1,28 @@
+/*
+ * ============================================================================
+ * Raven Editor
+ * File        : terminal.c
+ * Description : Terminal handling functions.
+ * ============================================================================
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <termios.h>
 #include <unistd.h>
+#include <sys/ioctl.h>
 
 #include "terminal.h"
 
 /*
  * Stores the original terminal settings.
- * These settings are restored when Raven exits.
  */
 static struct termios originalTermios;
 
 /*
- * Restore the terminal to its original state.
+ * ============================================================================
+ * Restore terminal settings.
+ * ============================================================================
  */
 void disableRawMode(void)
 {
@@ -24,10 +34,9 @@ void disableRawMode(void)
 }
 
 /*
- * Enable raw mode.
- *
- * Raw mode allows Raven to receive keyboard input
- * one character at a time instead of waiting for Enter.
+ * ============================================================================
+ * Enable raw terminal mode.
+ * ============================================================================
  */
 void enableRawMode(void)
 {
@@ -39,7 +48,11 @@ void enableRawMode(void)
 
     struct termios raw = originalTermios;
 
-    /* Disable echo and canonical mode */
+    /*
+     * Disable:
+     *  ECHO    -> Don't print typed keys.
+     *  ICANON  -> Read input one character at a time.
+     */
     raw.c_lflag &= ~(ECHO | ICANON);
 
     if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw) == -1)
@@ -50,7 +63,9 @@ void enableRawMode(void)
 }
 
 /*
- * Read one character from the keyboard.
+ * ============================================================================
+ * Read one character from keyboard.
+ * ============================================================================
  */
 int readKey(void)
 {
@@ -58,8 +73,33 @@ int readKey(void)
 
     while (read(STDIN_FILENO, &c, 1) != 1)
     {
-        /* Keep trying until one character is read */
+        /* Keep reading until one character is received */
     }
 
     return c;
+}
+
+/*
+ * ============================================================================
+ * Get terminal window size.
+ *
+ * Returns:
+ *      0  -> Success
+ *     -1  -> Failure
+ * ============================================================================
+ */
+int getWindowSize(int *rows, int *cols)
+{
+    struct winsize ws;
+
+    if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == -1 ||
+        ws.ws_col == 0)
+    {
+        return -1;
+    }
+
+    *rows = ws.ws_row;
+    *cols = ws.ws_col;
+
+    return 0;
 }
