@@ -5,40 +5,54 @@
  * ============================================================================
  * Raven Editor
  * File        : terminal.h
- * Description : Terminal handling functions.
+ * Description : Terminal control and keyboard input.
  * ============================================================================
  */
 
-/*
- * Enable terminal raw mode.
- *
- * Raw mode allows Raven to capture
- * keyboard input directly.
- */
-void enableRawMode(void);
+#include <termios.h>
 
 /*
- * Restore terminal settings
- * before exiting Raven.
+ * ============================================================================
+ * Editor Keys
+ * ============================================================================
+ *
+ * ASCII values occupy 0–255.
+ * Special keys begin at 1000.
+ *
  */
+
+enum EditorKey
+{
+    ARROW_LEFT = 1000,
+    ARROW_RIGHT,
+    ARROW_UP,
+    ARROW_DOWN,
+
+    DEL_KEY,
+
+    HOME_KEY,
+
+    END_KEY,
+
+    PAGE_UP,
+
+    PAGE_DOWN
+};
+
+/*
+ * Raw terminal mode
+ */
+void enableRawMode(void);
 void disableRawMode(void);
 
 /*
- * Read a single keyboard input.
+ * Keyboard
  */
 int readKey(void);
 
 /*
- * Get the current terminal size.
- *
- * Parameters:
- *   rows - Pointer to store the number of terminal rows.
- *   cols - Pointer to store the number of terminal columns.
- *
- * Returns:
- *   0  -> Success
- *  -1  -> Failure
+ * Window
  */
 int getWindowSize(int *rows, int *cols);
 
-#endif /* TERMINAL_H */
+#endif
