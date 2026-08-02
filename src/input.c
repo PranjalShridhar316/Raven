@@ -7,32 +7,18 @@
  */
 
 #include <stdlib.h>
-#include <unistd.h>
 
 #include "input.h"
-#include "editor.h"
 #include "terminal.h"
+#include "screen.h"
+#include "cursor.h"
 
 /*
  * ============================================================================
- * CTRL_KEY Macro
- * ----------------------------------------------------------------------------
- * Converts a lowercase character into its Ctrl-key equivalent.
- *
- * Example:
- *      CTRL_KEY('q') -> Ctrl + Q
- *      CTRL_KEY('s') -> Ctrl + S
+ * Process one key press.
  * ============================================================================
  */
-#define CTRL_KEY(k) ((k) & 0x1f)
 
-/*
- * ============================================================================
- * editorProcessKeypress()
- * ----------------------------------------------------------------------------
- * Reads one key from the keyboard and performs the appropriate action.
- * ============================================================================
- */
 void editorProcessKeypress(void)
 {
     int key = readKey();
@@ -40,86 +26,32 @@ void editorProcessKeypress(void)
     switch (key)
     {
         /*
-         * ------------------------------------------------------------
-         * Quit Editor
-         * ------------------------------------------------------------
+         * Quit
          */
-        case CTRL_KEY('q'):
-        {
-            /* Clear the screen */
-            write(STDOUT_FILENO, "\x1b[2J", 4);
 
-            /* Move cursor to top-left */
-            write(STDOUT_FILENO, "\x1b[H", 3);
+        case CTRL_KEY('q'):
 
             exit(EXIT_SUCCESS);
+
             break;
-        }
 
         /*
-         * ------------------------------------------------------------
-         * Cursor Movement
-         * ------------------------------------------------------------
+         * Cursor Keys
          */
-        case ARROW_LEFT:
-        case ARROW_RIGHT:
+
         case ARROW_UP:
         case ARROW_DOWN:
-        {
+        case ARROW_LEFT:
+        case ARROW_RIGHT:
+
             editorMoveCursor(key);
-            break;
-        }
 
-        /*
-         * ------------------------------------------------------------
-         * Home Key
-         * ------------------------------------------------------------
-         */
-        case HOME_KEY:
-        {
-            E.cx = 0;
             break;
-        }
 
-        /*
-         * ------------------------------------------------------------
-         * End Key
-         * ------------------------------------------------------------
-         */
-        case END_KEY:
-        {
-            E.cx = E.screencols - 1;
-            break;
-        }
-
-        /*
-         * ------------------------------------------------------------
-         * Page Up
-         * ------------------------------------------------------------
-         */
-        case PAGE_UP:
-        {
-            E.cy = 0;
-            break;
-        }
-
-        /*
-         * ------------------------------------------------------------
-         * Page Down
-         * ------------------------------------------------------------
-         */
-        case PAGE_DOWN:
-        {
-            E.cy = E.screenrows - 1;
-            break;
-        }
-
-        /*
-         * ------------------------------------------------------------
-         * Default
-         * ------------------------------------------------------------
-         */
         default:
+
             break;
     }
+
+    editorRefreshScreen();
 }

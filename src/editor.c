@@ -2,7 +2,7 @@
  * ============================================================================
  * Raven Editor
  * File        : editor.c
- * Description : Editor initialization and cursor management.
+ * Description : Editor initialization.
  * ============================================================================
  */
 
@@ -10,6 +10,7 @@
 
 #include "editor.h"
 #include "terminal.h"
+#include "buffer.h"
 
 /*
  * ============================================================================
@@ -22,73 +23,33 @@ EditorConfig E;
 /*
  * ============================================================================
  * editorInit()
- * ----------------------------------------------------------------------------
- * Initializes the editor state.
  * ============================================================================
  */
+
 void editorInit(void)
 {
-    /* Initial cursor position */
+    /* Cursor starts at top-left */
+
     E.cx = 0;
     E.cy = 0;
 
-    /*
-     * Determine the current terminal size.
-     */
+    /* Empty document */
+
+    E.numRows = 0;
+    E.rows = NULL;
+
+    /* Determine terminal size */
+
     if (getWindowSize(&E.screenrows, &E.screencols) == -1)
     {
         exit(EXIT_FAILURE);
     }
-}
 
-/*
- * ============================================================================
- * editorMoveCursor()
- * ----------------------------------------------------------------------------
- * Moves the cursor while keeping it inside the visible terminal.
- * ============================================================================
- */
-void editorMoveCursor(int key)
-{
-    switch (key)
-    {
-        case ARROW_LEFT:
-        {
-            if (E.cx > 0)
-            {
-                E.cx--;
-            }
-            break;
-        }
+    /*
+     * Temporary rows for testing.
+     */
 
-        case ARROW_RIGHT:
-        {
-            if (E.cx < E.screencols - 1)
-            {
-                E.cx++;
-            }
-            break;
-        }
-
-        case ARROW_UP:
-        {
-            if (E.cy > 0)
-            {
-                E.cy--;
-            }
-            break;
-        }
-
-        case ARROW_DOWN:
-        {
-            if (E.cy < E.screenrows - 1)
-            {
-                E.cy++;
-            }
-            break;
-        }
-
-        default:
-            break;
-    }
+    editorInsertRow(0, "Welcome to Raven", 16);
+    editorInsertRow(1, "Milestone 1.7", 13);
+    editorInsertRow(2, "Buffer Engine", 13);
 }

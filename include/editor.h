@@ -5,71 +5,52 @@
  * ============================================================================
  * Raven Editor
  * File        : editor.h
- * Description : Global editor state and editor function declarations.
+ * Description : Global editor state.
  * ============================================================================
  */
 
+#include "row.h"
+
 /*
- * ---------------------------------------------------------------------------
+ * ============================================================================
  * Editor Configuration
- * ---------------------------------------------------------------------------
- *
- * This structure stores the complete runtime state of Raven.
- * As the project grows, additional members (rows, files, syntax highlighting,
- * Git state, keymaps, etc.) will be added here.
- *
+ * ============================================================================
  */
 
 typedef struct
 {
     /*
      * Cursor Position
-     * ----------------
-     * cx -> Cursor X (column)
-     * cy -> Cursor Y (row)
      */
     int cx;
     int cy;
 
     /*
-     * Terminal Size
-     * ----------------
-     * Number of visible rows and columns.
+     * Screen Size
      */
     int screenrows;
     int screencols;
 
-} EditorConfig;
+    /*
+     * Document
+     */
+    int numRows;
+    EditorRow *rows;
 
+} EditorConfig;
 
 /*
  * Global editor instance.
- * Defined in editor.c
  */
 extern EditorConfig E;
 
-
 /*
- * ---------------------------------------------------------------------------
- * Initialization
- * ---------------------------------------------------------------------------
+ * ============================================================================
+ * Editor Functions
+ * ============================================================================
  */
 
-/*
- * Initialize the editor.
- */
+/* Initialize editor */
 void editorInit(void);
-
-
-/*
- * ---------------------------------------------------------------------------
- * Cursor
- * ---------------------------------------------------------------------------
- */
-
-/*
- * Move the cursor according to the pressed key.
- */
-void editorMoveCursor(int key);
 
 #endif /* EDITOR_H */

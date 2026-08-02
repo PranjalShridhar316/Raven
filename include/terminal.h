@@ -13,6 +13,21 @@
 
 /*
  * ============================================================================
+ * Helper Macros
+ * ============================================================================
+ */
+
+/*
+ * Convert a key into its Ctrl equivalent.
+ *
+ * Example:
+ * CTRL_KEY('q') -> 17
+ * CTRL_KEY('s') -> 19
+ */
+#define CTRL_KEY(k) ((k) & 0x1f)
+
+/*
+ * ============================================================================
  * Editor Keys
  * ============================================================================
  *
@@ -29,30 +44,27 @@ enum EditorKey
     ARROW_DOWN,
 
     DEL_KEY,
-
     HOME_KEY,
-
     END_KEY,
 
     PAGE_UP,
-
     PAGE_DOWN
 };
 
 /*
- * Raw terminal mode
+ * ============================================================================
+ * Terminal Functions
+ * ============================================================================
  */
+
+/* Raw terminal mode */
 void enableRawMode(void);
 void disableRawMode(void);
 
-/*
- * Keyboard
- */
+/* Keyboard */
 int readKey(void);
 
-/*
- * Window
- */
+/* Window size */
 int getWindowSize(int *rows, int *cols);
 
-#endif
+#endif /* TERMINAL_H */

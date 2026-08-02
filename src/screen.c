@@ -26,9 +26,7 @@ void abAppend(AppendBuffer *ab, const char *s, int len)
     char *newBuffer = realloc(ab->buffer, ab->length + len);
 
     if (newBuffer == NULL)
-    {
         return;
-    }
 
     memcpy(&newBuffer[ab->length], s, len);
 
@@ -56,49 +54,54 @@ void editorDrawRows(AppendBuffer *ab)
 
     for (y = 0; y < E.screenrows; y++)
     {
-        if (y == E.screenrows / 3)
+        if (y < E.numRows)
         {
-            char welcome[80];
-
-            int len = snprintf(
-                welcome,
-                sizeof(welcome),
-                "Raven Editor -- Version %s",
-                RAVEN_VERSION
-            );
+            int len = E.rows[y].size;
 
             if (len > E.screencols)
-            {
                 len = E.screencols;
-            }
 
-            int padding = (E.screencols - len) / 2;
-
-            if (padding)
-            {
-                abAppend(ab, "~", 1);
-                padding--;
-            }
-
-            while (padding--)
-            {
-                abAppend(ab, " ", 1);
-            }
-
-            abAppend(ab, welcome, len);
+            abAppend(ab, E.rows[y].chars, len);
         }
         else
         {
-            abAppend(ab, "~", 1);
+            if (E.numRows == 0 && y == E.screenrows / 3)
+            {
+                char welcome[80];
+
+                int len = snprintf(
+                    welcome,
+                    sizeof(welcome),
+                    "Raven Editor -- Version %s",
+                    RAVEN_VERSION
+                );
+
+                if (len > E.screencols)
+                    len = E.screencols;
+
+                int padding = (E.screencols - len) / 2;
+
+                if (padding)
+                {
+                    abAppend(ab, "~", 1);
+                    padding--;
+                }
+
+                while (padding--)
+                    abAppend(ab, " ", 1);
+
+                abAppend(ab, welcome, len);
+            }
+            else
+            {
+                abAppend(ab, "~", 1);
+            }
         }
 
-        /* Clear the remainder of the line */
         abAppend(ab, "\x1b[K", 3);
 
         if (y < E.screenrows - 1)
-        {
             abAppend(ab, "\r\n", 2);
-        }
     }
 }
 
@@ -133,19 +136,13 @@ void editorRefreshScreen(void)
 {
     AppendBuffer ab = APPEND_BUFFER_INIT;
 
-    /* Hide cursor */
     abAppend(&ab, "\x1b[?25l", 6);
-
-    /* Move to top-left */
     abAppend(&ab, "\x1b[H", 3);
 
-    /* Draw screen */
     editorDrawRows(&ab);
 
-    /* Draw cursor */
     editorDrawCursor(&ab);
 
-    /* Show cursor */
     abAppend(&ab, "\x1b[?25h", 6);
 
     write(STDOUT_FILENO, ab.buffer, ab.length);
