@@ -6,7 +6,7 @@
  * ============================================================================
  */
 
-#include <stdio.h>      // snprintf()
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -15,13 +15,12 @@
 #include "editor.h"
 #include "raven.h"
 
-#define ABUF_INIT {NULL, 0}
-
 /*
  * ============================================================================
- * Append data to the append buffer.
+ * Append Buffer
  * ============================================================================
  */
+
 void abAppend(AppendBuffer *ab, const char *s, int len)
 {
     char *newBuffer = realloc(ab->buffer, ab->length + len);
@@ -37,21 +36,20 @@ void abAppend(AppendBuffer *ab, const char *s, int len)
     ab->length += len;
 }
 
-/*
- * ============================================================================
- * Free the append buffer.
- * ============================================================================
- */
 void abFree(AppendBuffer *ab)
 {
     free(ab->buffer);
+
+    ab->buffer = NULL;
+    ab->length = 0;
 }
 
 /*
  * ============================================================================
- * Draw every row of the editor.
+ * Draw Editor Rows
  * ============================================================================
  */
+
 void editorDrawRows(AppendBuffer *ab)
 {
     int y;
@@ -94,7 +92,7 @@ void editorDrawRows(AppendBuffer *ab)
             abAppend(ab, "~", 1);
         }
 
-        /* Clear current line */
+        /* Clear the remainder of the line */
         abAppend(ab, "\x1b[K", 3);
 
         if (y < E.screenrows - 1)
@@ -106,29 +104,50 @@ void editorDrawRows(AppendBuffer *ab)
 
 /*
  * ============================================================================
- * Refresh the entire screen.
+ * Draw Cursor
  * ============================================================================
  */
+
+void editorDrawCursor(AppendBuffer *ab)
+{
+    char buf[32];
+
+    snprintf(
+        buf,
+        sizeof(buf),
+        "\x1b[%d;%dH",
+        E.cy + 1,
+        E.cx + 1
+    );
+
+    abAppend(ab, buf, strlen(buf));
+}
+
+/*
+ * ============================================================================
+ * Refresh Screen
+ * ============================================================================
+ */
+
 void editorRefreshScreen(void)
 {
-    AppendBuffer ab = ABUF_INIT;
+    AppendBuffer ab = APPEND_BUFFER_INIT;
 
     /* Hide cursor */
     abAppend(&ab, "\x1b[?25l", 6);
 
-    /* Move cursor to top-left */
+    /* Move to top-left */
     abAppend(&ab, "\x1b[H", 3);
 
-    /* Draw editor */
+    /* Draw screen */
     editorDrawRows(&ab);
 
-    /* Move cursor to top-left */
-    abAppend(&ab, "\x1b[H", 3);
+    /* Draw cursor */
+    editorDrawCursor(&ab);
 
     /* Show cursor */
     abAppend(&ab, "\x1b[?25h", 6);
 
-    /* Draw everything at once */
     write(STDOUT_FILENO, ab.buffer, ab.length);
 
     abFree(&ab);

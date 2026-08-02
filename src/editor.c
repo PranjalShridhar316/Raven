@@ -2,7 +2,7 @@
  * ============================================================================
  * Raven Editor
  * File        : editor.c
- * Description : Editor initialization and global state.
+ * Description : Editor initialization and cursor management.
  * ============================================================================
  */
 
@@ -12,17 +12,18 @@
 #include "terminal.h"
 
 /*
- * Global editor instance.
+ * ============================================================================
+ * Global Editor State
+ * ============================================================================
  */
+
 EditorConfig E;
 
 /*
  * ============================================================================
- * Initialize the editor.
- *
- * Responsibilities:
- *   - Initialize cursor position.
- *   - Obtain terminal dimensions.
+ * editorInit()
+ * ----------------------------------------------------------------------------
+ * Initializes the editor state.
  * ============================================================================
  */
 void editorInit(void)
@@ -31,9 +32,63 @@ void editorInit(void)
     E.cx = 0;
     E.cy = 0;
 
-    /* Get terminal dimensions */
+    /*
+     * Determine the current terminal size.
+     */
     if (getWindowSize(&E.screenrows, &E.screencols) == -1)
     {
         exit(EXIT_FAILURE);
+    }
+}
+
+/*
+ * ============================================================================
+ * editorMoveCursor()
+ * ----------------------------------------------------------------------------
+ * Moves the cursor while keeping it inside the visible terminal.
+ * ============================================================================
+ */
+void editorMoveCursor(int key)
+{
+    switch (key)
+    {
+        case ARROW_LEFT:
+        {
+            if (E.cx > 0)
+            {
+                E.cx--;
+            }
+            break;
+        }
+
+        case ARROW_RIGHT:
+        {
+            if (E.cx < E.screencols - 1)
+            {
+                E.cx++;
+            }
+            break;
+        }
+
+        case ARROW_UP:
+        {
+            if (E.cy > 0)
+            {
+                E.cy--;
+            }
+            break;
+        }
+
+        case ARROW_DOWN:
+        {
+            if (E.cy < E.screenrows - 1)
+            {
+                E.cy++;
+            }
+            break;
+        }
+
+        default:
+            break;
     }
 }
