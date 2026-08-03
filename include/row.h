@@ -5,33 +5,29 @@
  * ============================================================================
  * Raven Editor
  * File        : row.h
- * Description : Represents one line of text.
+ * Description : Represents a single line of text.
  * ============================================================================
  */
 
-/*
- * A single line inside the editor.
- */
 typedef struct
 {
-    /*
-     * Number of characters.
-     */
     int size;
-
-    /*
-     * Character buffer.
-     */
     char *chars;
-
 } EditorRow;
 
 /*
- * Row Management
+ * Initialize a row.
  */
+void rowInit(EditorRow *row, const char *s, int len);
 
-void rowInit(EditorRow *row);
-
+/*
+ * Free a row.
+ */
 void rowFree(EditorRow *row);
+
+/*
+ * Insert a character into a row.
+ */
+void rowInsertChar(EditorRow *row, int at, int c);
 
 #endif /* ROW_H */

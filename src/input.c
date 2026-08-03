@@ -2,28 +2,30 @@
  * ============================================================================
  * Raven Editor
  * File        : input.c
- * Description : Keyboard input processing.
+ * Description : Keyboard input.
  * ============================================================================
  */
 
+#include <ctype.h>
 #include <stdlib.h>
 
 #include "input.h"
 #include "terminal.h"
-#include "screen.h"
 #include "cursor.h"
+#include "buffer.h"
+#include "screen.h"
 
 /*
  * ============================================================================
- * Process one key press.
+ * Process Keyboard Input
  * ============================================================================
  */
 
 void editorProcessKeypress(void)
 {
-    int key = readKey();
+    int c = readKey();
 
-    switch (key)
+    switch (c)
     {
         /*
          * Quit
@@ -36,7 +38,7 @@ void editorProcessKeypress(void)
             break;
 
         /*
-         * Cursor Keys
+         * Cursor
          */
 
         case ARROW_UP:
@@ -44,11 +46,20 @@ void editorProcessKeypress(void)
         case ARROW_LEFT:
         case ARROW_RIGHT:
 
-            editorMoveCursor(key);
+            editorMoveCursor(c);
 
             break;
 
+        /*
+         * Printable characters
+         */
+
         default:
+
+            if (!iscntrl(c))
+            {
+                editorInsertChar(c);
+            }
 
             break;
     }

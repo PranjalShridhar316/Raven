@@ -1,23 +1,20 @@
 #ifndef BUFFER_H
 #define BUFFER_H
 
-/*
- * ============================================================================
- * Raven Editor
- * File        : buffer.h
- * Description : Document buffer management.
- * ============================================================================
- */
-
 #include "row.h"
 
 /*
- * Insert a new row.
+ * Insert a row.
  */
-void editorInsertRow(int at, const char *s, size_t len);
+void editorInsertRow(int at, const char *s, int len);
 
 /*
- * Free the entire document.
+ * Insert one character.
+ */
+void editorInsertChar(int c);
+
+/*
+ * Free the document.
  */
 void editorFreeBuffer(void);
 

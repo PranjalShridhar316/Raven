@@ -2,7 +2,7 @@
  * ============================================================================
  * Raven Editor
  * File        : buffer.c
- * Description : Document buffer management.
+ * Description : Document buffer.
  * ============================================================================
  */
 
@@ -14,40 +14,50 @@
 
 /*
  * ============================================================================
- * Insert a row.
+ * Insert Row
  * ============================================================================
  */
-void editorInsertRow(int at, const char *s, size_t len)
+
+void editorInsertRow(int at, const char *s, int len)
 {
     if (at < 0 || at > E.numRows)
         return;
 
     E.rows = realloc(E.rows, sizeof(EditorRow) * (E.numRows + 1));
 
-    memmove(
-        &E.rows[at + 1],
-        &E.rows[at],
-        sizeof(EditorRow) * (E.numRows - at)
-    );
+    memmove(&E.rows[at + 1],
+            &E.rows[at],
+            sizeof(EditorRow) * (E.numRows - at));
 
-    rowInit(&E.rows[at]);
-
-    E.rows[at].chars = malloc(len + 1);
-
-    memcpy(E.rows[at].chars, s, len);
-
-    E.rows[at].chars[len] = '\0';
-
-    E.rows[at].size = len;
+    rowInit(&E.rows[at], s, len);
 
     E.numRows++;
 }
 
 /*
  * ============================================================================
- * Free every row.
+ * Insert Character
  * ============================================================================
  */
+
+void editorInsertChar(int c)
+{
+    if (E.cy == E.numRows)
+    {
+        editorInsertRow(E.numRows, "", 0);
+    }
+
+    rowInsertChar(&E.rows[E.cy], E.cx, c);
+
+    E.cx++;
+}
+
+/*
+ * ============================================================================
+ * Free Buffer
+ * ============================================================================
+ */
+
 void editorFreeBuffer(void)
 {
     int i;
