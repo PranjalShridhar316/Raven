@@ -1,20 +1,23 @@
-#ifndef SCREEN_H
-#define SCREEN_H
+#ifndef INPUT_H
+#define INPUT_H
 
-typedef struct
-{
-    char *buffer;
-    int length;
-} AppendBuffer;
+/*
+ * ============================================================================
+ * Raven Editor
+ * File        : input.h
+ * Description : Keyboard input processing.
+ * ============================================================================
+ */
 
-#define APPEND_BUFFER_INIT {NULL, 0}
+/*
+ * ============================================================================
+ * Input Functions
+ * ============================================================================
+ */
 
-void abAppend(AppendBuffer *ab, const char *s, int len);
-void abFree(AppendBuffer *ab);
+/*
+ * Process one keyboard event.
+ */
+void editorProcessKeypress(void);
 
-void editorDrawRows(AppendBuffer *ab);
-void editorDrawCursor(AppendBuffer *ab);
-
-void editorRefreshScreen(void);
-
-#endif
+#endif /* INPUT_H */

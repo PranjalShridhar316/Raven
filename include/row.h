@@ -9,25 +9,38 @@
  * ============================================================================
  */
 
+/*
+ * ============================================================================
+ * Editor Row
+ * ============================================================================
+ *
+ * One EditorRow represents one line in the document.
+ *
+ */
+
 typedef struct
 {
+    /* Number of characters in the row */
     int size;
+
+    /* Character buffer */
     char *chars;
+
 } EditorRow;
 
 /*
- * Initialize a row.
+ * ============================================================================
+ * Row Functions
+ * ============================================================================
  */
+
+/* Initialize a row */
 void rowInit(EditorRow *row, const char *s, int len);
 
-/*
- * Free a row.
- */
+/* Free row memory */
 void rowFree(EditorRow *row);
 
-/*
- * Insert a character into a row.
- */
+/* Insert one character */
 void rowInsertChar(EditorRow *row, int at, int c);
 
 #endif /* ROW_H */

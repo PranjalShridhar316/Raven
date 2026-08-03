@@ -19,21 +19,19 @@
 
 typedef struct
 {
-    /*
-     * Cursor Position
-     */
+    /* Cursor */
     int cx;
     int cy;
 
-    /*
-     * Screen Size
-     */
+    /* Screen */
     int screenrows;
     int screencols;
 
-    /*
-     * Document
-     */
+    /* Scroll offsets */
+    int rowoff;
+    int coloff;
+
+    /* Document */
     int numRows;
     EditorRow *rows;
 

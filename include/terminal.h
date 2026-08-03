@@ -17,13 +17,7 @@
  * ============================================================================
  */
 
-/*
- * Convert a key into its Ctrl equivalent.
- *
- * Example:
- * CTRL_KEY('q') -> 17
- * CTRL_KEY('s') -> 19
- */
+/* Convert a key into its Ctrl equivalent. */
 #define CTRL_KEY(k) ((k) & 0x1f)
 
 /*
@@ -31,12 +25,12 @@
  * Editor Keys
  * ============================================================================
  *
- * ASCII values occupy 0–255.
+ * ASCII values occupy 0-255.
  * Special keys begin at 1000.
  *
  */
 
-enum EditorKey
+typedef enum
 {
     ARROW_LEFT = 1000,
     ARROW_RIGHT,
@@ -44,12 +38,17 @@ enum EditorKey
     ARROW_DOWN,
 
     DEL_KEY,
+
     HOME_KEY,
     END_KEY,
 
     PAGE_UP,
-    PAGE_DOWN
-};
+    PAGE_DOWN,
+
+    INSERT_KEY,
+    BACKSPACE_KEY
+
+} EditorKey;
 
 /*
  * ============================================================================
@@ -57,14 +56,11 @@ enum EditorKey
  * ============================================================================
  */
 
-/* Raw terminal mode */
 void enableRawMode(void);
 void disableRawMode(void);
 
-/* Keyboard */
 int readKey(void);
 
-/* Window size */
 int getWindowSize(int *rows, int *cols);
 
 #endif /* TERMINAL_H */
