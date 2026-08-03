@@ -23,11 +23,19 @@ void editorInsertRow(int at, const char *s, int len)
     if (at < 0 || at > E.numRows)
         return;
 
-    E.rows = realloc(E.rows, sizeof(EditorRow) * (E.numRows + 1));
+    EditorRow *newRows =
+        realloc(E.rows, sizeof(EditorRow) * (E.numRows + 1));
 
-    memmove(&E.rows[at + 1],
-            &E.rows[at],
-            sizeof(EditorRow) * (E.numRows - at));
+    if (newRows == NULL)
+        return;
+
+    E.rows = newRows;
+
+    memmove(
+        &E.rows[at + 1],
+        &E.rows[at],
+        sizeof(EditorRow) * (E.numRows - at)
+    );
 
     rowInit(&E.rows[at], s, len);
 

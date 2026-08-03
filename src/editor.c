@@ -28,18 +28,21 @@ EditorConfig E;
 
 void editorInit(void)
 {
-    /* Cursor starts at top-left */
-
+    /*
+     * Cursor starts at top-left.
+     */
     E.cx = 0;
     E.cy = 0;
 
-    /* Empty document */
-
+    /*
+     * Empty document.
+     */
     E.numRows = 0;
     E.rows = NULL;
 
-    /* Determine terminal size */
-
+    /*
+     * Determine terminal size.
+     */
     if (getWindowSize(&E.screenrows, &E.screencols) == -1)
     {
         exit(EXIT_FAILURE);
@@ -47,9 +50,15 @@ void editorInit(void)
 
     /*
      * Temporary rows for testing.
+     * These will be removed when file loading is implemented.
      */
-
     editorInsertRow(0, "Welcome to Raven", 16);
     editorInsertRow(1, "Milestone 1.7", 13);
     editorInsertRow(2, "Buffer Engine", 13);
+
+    /*
+     * Reset cursor after creating demo rows.
+     */
+    E.cx = 0;
+    E.cy = 0;
 }

@@ -2,6 +2,7 @@
  * ============================================================================
  * Raven Editor
  * File        : main.c
+ * Description : Entry point of Raven.
  * ============================================================================
  */
 
@@ -16,10 +17,10 @@ int main(void)
 
     editorInit();
 
+    editorRefreshScreen();
+
     while (1)
     {
-        editorRefreshScreen();
-
         editorProcessKeypress();
     }
 

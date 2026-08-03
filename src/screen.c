@@ -136,13 +136,20 @@ void editorRefreshScreen(void)
 {
     AppendBuffer ab = APPEND_BUFFER_INIT;
 
+    /* Hide cursor */
     abAppend(&ab, "\x1b[?25l", 6);
+
+    /* Clear screen */
+    abAppend(&ab, "\x1b[2J", 4);
+
+    /* Move cursor home */
     abAppend(&ab, "\x1b[H", 3);
 
     editorDrawRows(&ab);
 
     editorDrawCursor(&ab);
 
+    /* Show cursor */
     abAppend(&ab, "\x1b[?25h", 6);
 
     write(STDOUT_FILENO, ab.buffer, ab.length);

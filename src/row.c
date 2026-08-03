@@ -50,18 +50,28 @@ void rowFree(EditorRow *row)
 
 void rowInsertChar(EditorRow *row, int at, int c)
 {
-    if (at < 0 || at > row->size)
-    {
+    if (at < 0)
+        at = 0;
+
+    if (at > row->size)
         at = row->size;
-    }
 
-    row->chars = realloc(row->chars, row->size + 2);
+    char *newChars = realloc(row->chars, row->size + 2);
 
-    memmove(&row->chars[at + 1],
-            &row->chars[at],
-            row->size - at + 1);
+    if (newChars == NULL)
+        return;
+
+    row->chars = newChars;
+
+    memmove(
+        &row->chars[at + 1],
+        &row->chars[at],
+        row->size - at + 1
+    );
+
+    row->chars[at] = c;
 
     row->size++;
 
-    row->chars[at] = c;
+    row->chars[row->size] = '\0';
 }
