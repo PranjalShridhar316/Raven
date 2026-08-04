@@ -150,3 +150,4 @@ void rowDeleteChar(EditorRow *row, int at)
 
     row->chars[row->size] = '\0';
 }
+
