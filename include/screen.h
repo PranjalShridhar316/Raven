@@ -1,23 +1,53 @@
-#ifndef INPUT_H
-#define INPUT_H
+#ifndef SCREEN_H
+#define SCREEN_H
 
 /*
  * ============================================================================
  * Raven Editor
- * File        : input.h
- * Description : Keyboard input processing.
+ * File        : screen.h
+ * Description : Screen rendering engine.
  * ============================================================================
  */
 
 /*
  * ============================================================================
- * Input Functions
+ * Append Buffer
  * ============================================================================
  */
 
-/*
- * Process one keyboard event.
- */
-void editorProcessKeypress(void);
+typedef struct
+{
+    char *buffer;
+    int length;
 
-#endif /* INPUT_H */
+} AppendBuffer;
+
+#define APPEND_BUFFER_INIT { NULL, 0 }
+
+/*
+ * ============================================================================
+ * Append Buffer Functions
+ * ============================================================================
+ */
+
+void abAppend(AppendBuffer *ab, const char *s, int len);
+void abFree(AppendBuffer *ab);
+
+/*
+ * ============================================================================
+ * Screen Drawing
+ * ============================================================================
+ */
+
+void editorDrawRows(AppendBuffer *ab);
+void editorDrawCursor(AppendBuffer *ab);
+
+/*
+ * ============================================================================
+ * Screen Refresh
+ * ============================================================================
+ */
+
+void editorRefreshScreen(void);
+
+#endif /* SCREEN_H */

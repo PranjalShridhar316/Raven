@@ -13,7 +13,7 @@
 
 /*
  * ============================================================================
- * Buffer Functions
+ * Row Operations
  * ============================================================================
  */
 
@@ -23,12 +23,39 @@
 void editorInsertRow(int at, const char *s, int len);
 
 /*
- * Insert a character at the cursor.
+ * Delete a row from the document.
+ */
+void editorDeleteRow(int at);
+
+/*
+ * ============================================================================
+ * Character Operations
+ * ============================================================================
+ */
+
+/*
+ * Insert one character at the cursor.
  */
 void editorInsertChar(int c);
 
 /*
- * Free the entire document.
+ * Delete one character.
+ */
+void editorDeleteChar(void);
+
+/*
+ * Insert a newline.
+ */
+void editorInsertNewline(void);
+
+/*
+ * ============================================================================
+ * Buffer Management
+ * ============================================================================
+ */
+
+/*
+ * Free the entire document buffer.
  */
 void editorFreeBuffer(void);
 

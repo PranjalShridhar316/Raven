@@ -2,7 +2,7 @@
  * ============================================================================
  * Raven Editor
  * File        : editor.c
- * Description : Editor initialization and global state management.
+ * Description : Editor initialization and cleanup.
  * ============================================================================
  */
 
@@ -22,84 +22,89 @@ EditorConfig E;
 
 /*
  * ============================================================================
- * editorInit()
- *
- * Initialize the global editor configuration.
+ * Initialize Editor
  * ============================================================================
  */
 
 void editorInit(void)
 {
     /*
+     * ------------------------------------------------------------------------
      * Cursor Position
+     * ------------------------------------------------------------------------
      */
+
     E.cx = 0;
     E.cy = 0;
 
     /*
-     * Render Position
-     *
-     * (Future syntax highlighting and tab expansion.)
+     * ------------------------------------------------------------------------
+     * Screen Scrolling
+     * ------------------------------------------------------------------------
      */
-    E.rx = 0;
+
+    E.rowoff = 0;
+    E.coloff = 0;
 
     /*
-     * Scroll Offsets
+     * ------------------------------------------------------------------------
+     * Document
+     * ------------------------------------------------------------------------
      */
-    E.rowOffset = 0;
-    E.colOffset = 0;
 
-    /*
-     * Empty Document
-     */
     E.numRows = 0;
     E.rows = NULL;
 
     /*
+     * ------------------------------------------------------------------------
      * File Information
+     * ------------------------------------------------------------------------
      */
+
     E.filename = NULL;
 
     /*
+     * ------------------------------------------------------------------------
      * Dirty Flag
-     *
-     * 0 = clean
-     * 1 = modified
+     * ------------------------------------------------------------------------
      */
+
     E.dirty = 0;
 
     /*
-     * Determine Terminal Size
+     * ------------------------------------------------------------------------
+     * Terminal Size
+     * ------------------------------------------------------------------------
      */
+
     if (getWindowSize(&E.screenrows, &E.screencols) == -1)
     {
         exit(EXIT_FAILURE);
     }
 
     /*
-     * Leave room for the future status bar
-     * and message bar.
-     */
-    E.screenrows -= 2;
-
-    /*
      * ------------------------------------------------------------------------
-     * Temporary Test Document
+     * Temporary Test Data
      *
-     * Remove after file loading is implemented.
+     * These rows are only for testing.
+     * They will be removed once file loading is implemented.
      * ------------------------------------------------------------------------
      */
 
     editorInsertRow(0, "Welcome to Raven", 16);
-    editorInsertRow(1, "Milestone 1.8", 13);
-    editorInsertRow(2, "Text Buffer Ready", 17);
+    editorInsertRow(1, "Milestone 2.0", 13);
+    editorInsertRow(2, "Document Buffer Engine", 22);
+
+    /*
+     * Loading the default text should not mark the file as modified.
+     */
+
+    E.dirty = 0;
 }
 
 /*
  * ============================================================================
- * editorFree()
- *
- * Free all allocated editor resources.
+ * Free Editor Resources
  * ============================================================================
  */
 
@@ -109,4 +114,6 @@ void editorFree(void)
 
     free(E.filename);
     E.filename = NULL;
+
+    E.dirty = 0;
 }

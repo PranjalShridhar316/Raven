@@ -9,10 +9,6 @@
  * ============================================================================
  */
 
-#ifndef _POSIX_C_SOURCE
-#define _POSIX_C_SOURCE 200809L
-#endif
-
 #include "row.h"
 
 /*
@@ -31,14 +27,6 @@ typedef struct
 
     int cx;
     int cy;
-
-    /*
-     * Rendered Cursor Position
-     *
-     * (Used when tabs and UTF-8 rendering are implemented.)
-     */
-
-    int rx;
 
     /*
      * ------------------------------------------------------------------------
@@ -60,7 +48,7 @@ typedef struct
 
     /*
      * ------------------------------------------------------------------------
-     * Document
+     * Document Buffer
      * ------------------------------------------------------------------------
      */
 
@@ -69,7 +57,7 @@ typedef struct
 
     /*
      * ------------------------------------------------------------------------
-     * Current File
+     * File Information
      * ------------------------------------------------------------------------
      */
 
@@ -77,7 +65,10 @@ typedef struct
 
     /*
      * ------------------------------------------------------------------------
-     * Editor State
+     * Dirty Flag
+     *
+     * 0 = Clean
+     * 1 = Modified
      * ------------------------------------------------------------------------
      */
 
@@ -100,12 +91,12 @@ extern EditorConfig E;
  */
 
 /*
- * Initialize the editor.
+ * Initialize editor.
  */
 void editorInit(void);
 
 /*
- * Release all editor resources.
+ * Release editor resources.
  */
 void editorFree(void);
 

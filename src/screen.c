@@ -13,6 +13,7 @@
 
 #include "screen.h"
 #include "editor.h"
+#include "cursor.h"
 #include "raven.h"
 
 /*
@@ -26,14 +27,18 @@ void abAppend(AppendBuffer *ab, const char *s, int len)
     char *newBuffer;
 
     if (len <= 0)
+    {
         return;
+    }
 
-    newBuffer = realloc(ab->buffer, ab->length + len);
+    newBuffer = realloc(ab->buffer, (size_t)(ab->length + len));
 
     if (newBuffer == NULL)
+    {
         return;
+    }
 
-    memcpy(newBuffer + ab->length, s, len);
+    memcpy(newBuffer + ab->length, s, (size_t)len);
 
     ab->buffer = newBuffer;
     ab->length += len;
@@ -49,7 +54,7 @@ void abFree(AppendBuffer *ab)
 
 /*
  * ============================================================================
- * Draw Editor Rows
+ * Draw File Rows
  * ============================================================================
  */
 
@@ -76,10 +81,11 @@ void editorDrawRows(AppendBuffer *ab)
                 );
 
                 if (len > E.screencols)
+                {
                     len = E.screencols;
+                }
 
-                int padding =
-                    (E.screencols - len) / 2;
+                int padding = (E.screencols - len) / 2;
 
                 if (padding)
                 {
@@ -88,7 +94,9 @@ void editorDrawRows(AppendBuffer *ab)
                 }
 
                 while (padding--)
+                {
                     abAppend(ab, " ", 1);
+                }
 
                 abAppend(ab, welcome, len);
             }
@@ -99,14 +107,17 @@ void editorDrawRows(AppendBuffer *ab)
         }
         else
         {
-            int len =
-                E.rows[filerow].size - E.coloff;
+            int len = E.rows[filerow].size - E.coloff;
 
             if (len < 0)
+            {
                 len = 0;
+            }
 
             if (len > E.screencols)
+            {
                 len = E.screencols;
+            }
 
             if (len > 0)
             {
@@ -118,9 +129,6 @@ void editorDrawRows(AppendBuffer *ab)
             }
         }
 
-        /*
-         * Clear remainder of line.
-         */
         abAppend(ab, "\x1b[K", 3);
 
         if (y < E.screenrows - 1)
@@ -148,7 +156,7 @@ void editorDrawCursor(AppendBuffer *ab)
         (E.cx - E.coloff) + 1
     );
 
-    abAppend(ab, buf, strlen(buf));
+    abAppend(ab, buf, (int)strlen(buf));
 }
 
 /*
@@ -162,34 +170,39 @@ void editorRefreshScreen(void)
     AppendBuffer ab = APPEND_BUFFER_INIT;
 
     /*
-     * Hide Cursor
+     * Update scrolling before drawing.
+     */
+    editorScroll();
+
+    /*
+     * Hide cursor.
      */
     abAppend(&ab, "\x1b[?25l", 6);
 
     /*
-     * Cursor Home
+     * Move to top-left.
      */
     abAppend(&ab, "\x1b[H", 3);
 
     /*
-     * Draw File
+     * Draw visible portion of file.
      */
     editorDrawRows(&ab);
 
     /*
-     * Position Cursor
+     * Position cursor.
      */
     editorDrawCursor(&ab);
 
     /*
-     * Show Cursor
+     * Show cursor.
      */
     abAppend(&ab, "\x1b[?25h", 6);
 
     write(
         STDOUT_FILENO,
         ab.buffer,
-        ab.length
+        (size_t)ab.length
     );
 
     abFree(&ab);

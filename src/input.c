@@ -8,6 +8,9 @@
 
 #include <ctype.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
 
 #include "input.h"
 #include "terminal.h"
@@ -26,6 +29,32 @@ void editorProcessKeypress(void)
 {
     int c = readKey();
 
+    /*
+     * ------------------------------------------------------------------------
+     * DEBUG
+     * Displays the numeric key code on the last line of the screen.
+     * Remove this after debugging.
+     * ------------------------------------------------------------------------
+     */
+
+    {
+        char dbg[64];
+
+        snprintf(
+            dbg,
+            sizeof(dbg),
+            "\x1b[%d;1HKey = %d\x1b[K",
+            E.screenrows,
+            c
+        );
+
+        write(
+            STDOUT_FILENO,
+            dbg,
+            strlen(dbg)
+        );
+    }
+
     switch (c)
     {
         /*
@@ -37,6 +66,7 @@ void editorProcessKeypress(void)
         case CTRL_KEY('q'):
 
             editorFree();
+
             exit(EXIT_SUCCESS);
 
             break;
@@ -102,17 +132,38 @@ void editorProcessKeypress(void)
 
         /*
          * --------------------------------------------------------------------
-         * Reserved Keys
+         * Enter
+         * --------------------------------------------------------------------
+         */
+
+        case '\r':
+
+            editorInsertNewline();
+
+            break;
+
+        /*
+         * --------------------------------------------------------------------
+         * Backspace
          * --------------------------------------------------------------------
          */
 
         case BACKSPACE_KEY:
-        case DEL_KEY:
-        case '\r':
 
-            /*
-             * To be implemented in the next milestone.
-             */
+            editorDeleteChar();
+
+            break;
+
+        /*
+         * --------------------------------------------------------------------
+         * Delete
+         * --------------------------------------------------------------------
+         */
+
+        case DEL_KEY:
+
+            editorMoveCursor(ARROW_RIGHT);
+            editorDeleteChar();
 
             break;
 

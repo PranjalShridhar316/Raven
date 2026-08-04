@@ -5,21 +5,20 @@
  * ============================================================================
  * Raven Editor
  * File        : cursor.h
- * Description : Cursor movement engine.
+ * Description : Cursor movement and scrolling.
  * ============================================================================
  */
 
 #include "terminal.h"
 
 /*
- * ============================================================================
- * Cursor Functions
- * ============================================================================
- */
-
-/*
- * Move the editor cursor.
+ * Move the cursor.
  */
 void editorMoveCursor(int key);
+
+/*
+ * Scroll the viewport.
+ */
+void editorScroll(void);
 
 #endif /* CURSOR_H */
