@@ -2,7 +2,7 @@
  * ============================================================================
  * Raven Editor
  * File        : input.c
- * Description : Keyboard input.
+ * Description : Keyboard input processing.
  * ============================================================================
  */
 
@@ -14,6 +14,7 @@
 #include "cursor.h"
 #include "buffer.h"
 #include "screen.h"
+#include "editor.h"
 
 /*
  * ============================================================================
@@ -28,17 +29,22 @@ void editorProcessKeypress(void)
     switch (c)
     {
         /*
+         * --------------------------------------------------------------------
          * Quit
+         * --------------------------------------------------------------------
          */
 
         case CTRL_KEY('q'):
 
+            editorFree();
             exit(EXIT_SUCCESS);
 
             break;
 
         /*
-         * Cursor
+         * --------------------------------------------------------------------
+         * Cursor Movement
+         * --------------------------------------------------------------------
          */
 
         case ARROW_UP:
@@ -51,7 +57,69 @@ void editorProcessKeypress(void)
             break;
 
         /*
-         * Printable characters
+         * --------------------------------------------------------------------
+         * Home / End
+         * --------------------------------------------------------------------
+         */
+
+        case HOME_KEY:
+
+            E.cx = 0;
+
+            break;
+
+        case END_KEY:
+
+            if (E.cy < E.numRows)
+            {
+                E.cx = E.rows[E.cy].size;
+            }
+
+            break;
+
+        /*
+         * --------------------------------------------------------------------
+         * Page Navigation
+         * --------------------------------------------------------------------
+         */
+
+        case PAGE_UP:
+
+            E.cy = E.rowoff;
+
+            break;
+
+        case PAGE_DOWN:
+
+            E.cy = E.rowoff + E.screenrows - 1;
+
+            if (E.cy > E.numRows)
+            {
+                E.cy = E.numRows;
+            }
+
+            break;
+
+        /*
+         * --------------------------------------------------------------------
+         * Reserved Keys
+         * --------------------------------------------------------------------
+         */
+
+        case BACKSPACE_KEY:
+        case DEL_KEY:
+        case '\r':
+
+            /*
+             * To be implemented in the next milestone.
+             */
+
+            break;
+
+        /*
+         * --------------------------------------------------------------------
+         * Printable Characters
+         * --------------------------------------------------------------------
          */
 
         default:

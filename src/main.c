@@ -13,12 +13,16 @@
 
 int main(void)
 {
+    /* Enable raw terminal mode */
     enableRawMode();
 
+    /* Initialize editor state */
     editorInit();
 
+    /* Draw the initial screen */
     editorRefreshScreen();
 
+    /* Main editor event loop */
     while (1)
     {
         editorProcessKeypress();

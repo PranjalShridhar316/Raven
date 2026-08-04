@@ -23,12 +23,17 @@
 
 void abAppend(AppendBuffer *ab, const char *s, int len)
 {
-    char *newBuffer = realloc(ab->buffer, ab->length + len);
+    char *newBuffer;
+
+    if (len <= 0)
+        return;
+
+    newBuffer = realloc(ab->buffer, ab->length + len);
 
     if (newBuffer == NULL)
         return;
 
-    memcpy(&newBuffer[ab->length], s, len);
+    memcpy(newBuffer + ab->length, s, len);
 
     ab->buffer = newBuffer;
     ab->length += len;
@@ -54,18 +59,12 @@ void editorDrawRows(AppendBuffer *ab)
 
     for (y = 0; y < E.screenrows; y++)
     {
-        if (y < E.numRows)
-        {
-            int len = E.rows[y].size;
+        int filerow = y + E.rowoff;
 
-            if (len > E.screencols)
-                len = E.screencols;
-
-            abAppend(ab, E.rows[y].chars, len);
-        }
-        else
+        if (filerow >= E.numRows)
         {
-            if (E.numRows == 0 && y == E.screenrows / 3)
+            if (E.numRows == 0 &&
+                y == E.screenrows / 3)
             {
                 char welcome[80];
 
@@ -79,7 +78,8 @@ void editorDrawRows(AppendBuffer *ab)
                 if (len > E.screencols)
                     len = E.screencols;
 
-                int padding = (E.screencols - len) / 2;
+                int padding =
+                    (E.screencols - len) / 2;
 
                 if (padding)
                 {
@@ -97,11 +97,36 @@ void editorDrawRows(AppendBuffer *ab)
                 abAppend(ab, "~", 1);
             }
         }
+        else
+        {
+            int len =
+                E.rows[filerow].size - E.coloff;
 
+            if (len < 0)
+                len = 0;
+
+            if (len > E.screencols)
+                len = E.screencols;
+
+            if (len > 0)
+            {
+                abAppend(
+                    ab,
+                    &E.rows[filerow].chars[E.coloff],
+                    len
+                );
+            }
+        }
+
+        /*
+         * Clear remainder of line.
+         */
         abAppend(ab, "\x1b[K", 3);
 
         if (y < E.screenrows - 1)
+        {
             abAppend(ab, "\r\n", 2);
+        }
     }
 }
 
@@ -119,8 +144,8 @@ void editorDrawCursor(AppendBuffer *ab)
         buf,
         sizeof(buf),
         "\x1b[%d;%dH",
-        E.cy + 1,
-        E.cx + 1
+        (E.cy - E.rowoff) + 1,
+        (E.cx - E.coloff) + 1
     );
 
     abAppend(ab, buf, strlen(buf));
@@ -136,23 +161,36 @@ void editorRefreshScreen(void)
 {
     AppendBuffer ab = APPEND_BUFFER_INIT;
 
-    /* Hide cursor */
+    /*
+     * Hide Cursor
+     */
     abAppend(&ab, "\x1b[?25l", 6);
 
-    /* Clear screen */
-    abAppend(&ab, "\x1b[2J", 4);
-
-    /* Move cursor home */
+    /*
+     * Cursor Home
+     */
     abAppend(&ab, "\x1b[H", 3);
 
+    /*
+     * Draw File
+     */
     editorDrawRows(&ab);
 
+    /*
+     * Position Cursor
+     */
     editorDrawCursor(&ab);
 
-    /* Show cursor */
+    /*
+     * Show Cursor
+     */
     abAppend(&ab, "\x1b[?25h", 6);
 
-    write(STDOUT_FILENO, ab.buffer, ab.length);
+    write(
+        STDOUT_FILENO,
+        ab.buffer,
+        ab.length
+    );
 
     abFree(&ab);
 }
